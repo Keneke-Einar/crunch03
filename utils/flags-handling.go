@@ -9,10 +9,10 @@ import (
 var PassedFlag map[string]bool = map[string]bool{
 	"help":    false,
 	"verbose": false,
+	"random":  false,
 }
 
-var delay int = 2500 // sourceFilename string = ""
-// randomGridSize [2]int // stores width and height in that order
+var delay int = 2500
 
 // isFlag: returns true if the argument is a flag
 func isFlag(s string) bool {
@@ -62,6 +62,7 @@ func CheckFlags() {
 		if isFlag(arg) {
 			if hasValue(arg) {
 				if getFlag(arg, "name") == "delay-ms" {
+
 					newDelay, err := strconv.Atoi(getFlag(arg, "value"))
 					if err != nil {
 						fmt.Println("Error: invalid value for delay")
@@ -72,6 +73,7 @@ func CheckFlags() {
 					fmt.Println("Error: unknown flag.")
 				}
 			} else {
+
 				_, ok := PassedFlag[arg[2:]]
 
 				if !ok {
