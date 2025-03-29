@@ -2,13 +2,20 @@ package utils
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 )
 
 // Input: reads grid dimensions and initializes game map
 func Input() {
+	if PassedFlag["random"] {
+		GenerateRandomMap()
+		return
+	}
+
 	fmt.Println("Enter the dimensions (height width):")
 	fmt.Scanf("%d %d\n", &h, &w)
+	fmt.Scanln()
 
 	for len(gameMap) < h {
 		row := []rune{}
@@ -18,6 +25,30 @@ func Input() {
 			row = append(row, char)
 		}
 		gameMap = append(gameMap, row)
+	}
+}
+
+func GenerateRandomMap() {
+	// Parse `randomDimensions` (which is stored as WxH)
+	var wVal, hVal int
+	fmt.Sscanf(randomDimensions, "%dx%d", &wVal, &hVal)
+
+	// Assign parsed values to global dimensions
+	h, w = hVal, wVal
+	gameMap = make([][]rune, h)
+
+	// Seed the random number generator
+	rand.Seed(time.Now().UnixNano())
+
+	for i := 0; i < h; i++ {
+		gameMap[i] = make([]rune, w)
+		for j := 0; j < w; j++ {
+			if rand.Float64() < 0.4 { // 40% chance of being alive
+				gameMap[i][j] = '#'
+			} else {
+				gameMap[i][j] = '.'
+			}
+		}
 	}
 }
 
