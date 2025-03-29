@@ -3,5 +3,6 @@ package main
 import "crunch03/utils"
 
 func main() {
-	utils.PrintTen()
+	utils.Input()
+	utils.RunGame()
 }
