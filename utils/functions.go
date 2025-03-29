@@ -98,5 +98,5 @@ func PrintHelp() {
 Options:
   --help			: Show this message and exit
   --verbose			: Display the tick number, grid size, delay time, and the number of living cells
-  --delay-ms=DELAY	: Set the delay time in milliseconds (accepts only integer values). Default is 2500`)
+  --delay-ms=DELAY              : Set the delay time in milliseconds (accepts only integer values). Default is 2500`)
 }
