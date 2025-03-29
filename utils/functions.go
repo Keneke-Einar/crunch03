@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Input: reads grid dimensions and initializes game map
 func Input() {
 	fmt.Println("Enter the dimensions (height width):")
 	fmt.Scanf("%d %d\n", &h, &w)
@@ -20,12 +21,26 @@ func Input() {
 	}
 }
 
+// RunGame: runs the simulation loop until no live cells remain
+func RunGame() {
+	for {
+		PrintMap()
+
+		if CountLiveCells() == 0 {
+			break
+		}
+
+		UpdateMap()
+
+		time.Sleep(time.Duration(delay * int(time.Millisecond)))
+	}
+}
+
+// PrintMap: clears the console and prints the game grid
 func PrintMap() {
-	// clear the console
 	ClearConsole()
 
 	if PassedFlag["verbose"] {
-		// print the statistics
 		fmt.Printf(`Tick: %v
 Grid Size: %vx%v
 Live Cells: %v
@@ -33,8 +48,6 @@ DelayMs: %v
 
 `, tick, w, h, CountLiveCells(), delay)
 	}
-
-	// print the map
 	for _, row := range gameMap {
 		for _, char := range row {
 			fmt.Print(charMap[char])
@@ -45,6 +58,7 @@ DelayMs: %v
 	tick++
 }
 
+// UpdateMap: applies game rules and updates the grid
 func UpdateMap() {
 	// need a new map for proper count
 	newMap := make([][]rune, h)
@@ -52,10 +66,10 @@ func UpdateMap() {
 		newMap[i] = make([]rune, w)
 	}
 
-	for i := range h {
-		for j := range w {
-			// count the number of neighbors of that cell
-			n := CountNeighbors(i, j)
+	// Iterate over each cell
+	for i := 0; i < h; i++ {
+		for j := 0; j < w; j++ {
+			n := CountNeighbors(i, j) // count the number of neighbors of that cell
 
 			if gameMap[i][j] == '#' { // if it's a live cell
 				if n > 3 || n < 2 {
@@ -78,20 +92,7 @@ func UpdateMap() {
 	gameMap = newMap // update the global map
 }
 
-func RunGame() {
-	for {
-		PrintMap()
-
-		if CountLiveCells() == 0 {
-			break
-		}
-
-		UpdateMap()
-
-		time.Sleep(time.Duration(delay * int(time.Millisecond)))
-	}
-}
-
+// PrintHelp: displays usage instructions for the program
 func PrintHelp() {
 	fmt.Println(`Usage: go run main.go [options]
 
