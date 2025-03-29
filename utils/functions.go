@@ -24,7 +24,7 @@ func PrintMap() {
 	// clear the console
 	ClearConsole()
 
-	if passedFlag["verbose"] {
+	if PassedFlag["verbose"] {
 		// print the statistics
 		fmt.Printf(`Tick: %v
 Grid Size: %vx%v
@@ -90,4 +90,13 @@ func RunGame() {
 
 		time.Sleep(time.Duration(delay * int(time.Millisecond)))
 	}
+}
+
+func PrintHelp() {
+	fmt.Println(`Usage: go run main.go [options]
+
+Options:
+  --help			: Show this message and exit
+  --verbose			: Display the tick number, grid size, delay time, and the number of living cells
+  --delay-ms=DELAY	: Set the delay time in milliseconds (accepts only integer values). Default is 2500`)
 }

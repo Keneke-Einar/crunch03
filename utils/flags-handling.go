@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-var passedFlag map[string]bool = map[string]bool{
+var PassedFlag map[string]bool = map[string]bool{
 	"help":    false,
 	"verbose": false,
 }
@@ -69,27 +69,23 @@ func CheckFlags() {
 
 					if err != nil {
 						fmt.Println("Error: invalid value for delay")
-						return
 					}
 
 					delay = newDelay
 				} else {
 					fmt.Println("Error: unknown flag.")
-					return
 				}
 			} else {
-				_, ok := passedFlag[arg[2:]]
+				_, ok := PassedFlag[arg[2:]]
 
 				if !ok {
 					fmt.Println("Error: unknown flag.")
-					return
 				}
 
-				passedFlag[arg[2:]] = true
+				PassedFlag[arg[2:]] = true
 			}
 		} else {
 			fmt.Println("Error: invalid argument.")
-			return
 		}
 	}
 }
