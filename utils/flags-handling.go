@@ -11,13 +11,10 @@ var PassedFlag map[string]bool = map[string]bool{
 	"verbose": false,
 }
 
-var (
-	delay int = 2500
-	// sourceFilename string = ""
-	// randomGridSize [2]int // stores width and height in that order
-)
+var delay int = 2500 // sourceFilename string = ""
+// randomGridSize [2]int // stores width and height in that order
 
-// Returns true if the string is a flag (starts with "--").
+// isFlag: returns true if the argument is a flag
 func isFlag(s string) bool {
 	if len(s) < 3 {
 		return false
@@ -26,7 +23,7 @@ func isFlag(s string) bool {
 	return s[:2] == "--"
 }
 
-// Returns true if the flag has an assigned value (provided the argument is a flag).
+// hasValue: returns true if the flag has a value
 func hasValue(flag string) bool {
 	for _, char := range flag {
 		if char == '=' {
@@ -37,9 +34,8 @@ func hasValue(flag string) bool {
 	return false
 }
 
-// Returns the name or the value (target) of the flag that has an assigned value.
-func getFlag(flag, target string) string {
-	// target should be either "name" or "value"
+// getFlag: returns the name or value of a flag
+func getFlag(flag, target string) string { // target should be either "name" or "value"
 	end := 0
 
 	for i, char := range flag {
@@ -58,6 +54,7 @@ func getFlag(flag, target string) string {
 	}
 }
 
+// CheckFlags: checks the flags passed as arguments and sets the corresponding variables
 func CheckFlags() {
 	args := os.Args[1:] // discard the filename argument
 
@@ -66,7 +63,6 @@ func CheckFlags() {
 			if hasValue(arg) {
 				if getFlag(arg, "name") == "delay-ms" {
 					newDelay, err := strconv.Atoi(getFlag(arg, "value"))
-
 					if err != nil {
 						fmt.Println("Error: invalid value for delay")
 					}
