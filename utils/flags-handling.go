@@ -75,16 +75,17 @@ func CheckFlags() {
 					delay = newDelay
 				} else {
 					fmt.Println("Error: unknown flag.")
+					return
 				}
 			} else {
-				_, ok := passedFlag[arg]
+				_, ok := passedFlag[arg[2:]]
 
 				if !ok {
 					fmt.Println("Error: unknown flag.")
 					return
 				}
 
-				passedFlag[arg] = true
+				passedFlag[arg[2:]] = true
 			}
 		} else {
 			fmt.Println("Error: invalid argument.")

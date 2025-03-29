@@ -24,12 +24,15 @@ func PrintMap() {
 	// clear the console
 	ClearConsole()
 
-	// print the statistics
-	fmt.Printf(`Tick: %v
+	if passedFlag["verbose"] {
+		// print the statistics
+		fmt.Printf(`Tick: %v
 Grid Size: %vx%v
 Live Cells: %v
 DelayMs: %v
+
 `, tick, w, h, CountLiveCells(), delay)
+	}
 
 	// print the map
 	for _, row := range gameMap {
