@@ -16,6 +16,7 @@ var Config struct {
 	Footprints bool
 	Colored    bool
 	Fullscreen bool
+	File       string
 }
 
 // Flag represents a command-line flag.
@@ -72,6 +73,11 @@ func processFullscreen(value string) error {
 	return nil
 }
 
+func processFile(value string) error {
+	Config.File = value
+	return nil
+}
+
 // flags defines the list of supported flags.
 var flags = []Flag{
 	{Name: "help", HasValue: false, Process: processHelp},
@@ -81,6 +87,7 @@ var flags = []Flag{
 	{Name: "footprints", HasValue: false, Process: processFootprints},
 	{Name: "colored", HasValue: false, Process: processColored},
 	{Name: "fullscreen", HasValue: false, Process: processFullscreen},
+	{Name: "file", HasValue: true, Process: processFile},
 }
 
 // ParseFlags processes command-line arguments.
