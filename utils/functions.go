@@ -3,11 +3,11 @@ package utils
 import (
 	"bufio"
 	"fmt"
-	"os" // Added for file handling
+	"os"
 	"time"
 )
 
-// Input: reads grid dimensions and initializes game map.
+// Reads grid dimensions and initializes the game map
 func Input() {
 	if Config.Random != "" {
 		GenerateRandomMap(Config.Random)
@@ -17,12 +17,10 @@ func Input() {
 		return
 	}
 
-	// Set default delay if not specified
 	if Config.Delay == 0 {
 		Config.Delay = 2500
 	}
 
-	// Initialize terminal size if fullscreen is enabled
 	if Config.Fullscreen {
 		termWidth, termHeight = GetTerminalSize()
 	}
@@ -34,15 +32,13 @@ func Input() {
 		fmt.Println("Enter the dimensions (height width):")
 		fmt.Scanf("%d %d\n", &originalH, &originalW)
 
-		// Check if fullscreen is enabled and adjust dimensions
 		h, w = originalH, originalW
 		if Config.Fullscreen {
 			effectiveHeight := termHeight
 			if Config.Verbose {
-				effectiveHeight -= 5 // Reserve space for verbose output
+				effectiveHeight -= 5
 			}
 
-			// Adjust dimensions to be at least the terminal size
 			if h < effectiveHeight {
 				h = effectiveHeight
 			}
@@ -51,33 +47,27 @@ func Input() {
 			}
 		}
 
-		// Create game map with adjusted dimensions
 		gameMap = make([][]rune, h)
 		for i := range gameMap {
 			gameMap[i] = make([]rune, w)
-			// Initialize all cells as dead
 			for j := range gameMap[i] {
 				gameMap[i][j] = '.'
 			}
 		}
 
-		// Determine the number of rows to read from input (originalH, up to adjusted h)
 		inputHeight := originalH
 		if inputHeight > h {
 			inputHeight = h
 		}
 
-		// Initialize visited cells tracking if footprints enabled
 		if Config.Footprints {
 			InitializeFootprints()
 		}
 
-		// Read the actual input grid up to inputHeight rows
 		for i := 0; i < inputHeight; i++ {
 			rowInput := ""
 			fmt.Scanf("%s\n", &rowInput)
 
-			// Copy input to game map, up to adjusted width (w)
 			for j, char := range rowInput {
 				if j < w {
 					gameMap[i][j] = char
@@ -87,7 +77,7 @@ func Input() {
 	}
 }
 
-// readFromFile: reads the grid from the file specified in Config.File
+// Reads the game grid from a specified file
 func readFromFile() {
 	file, err := os.Open(Config.File)
 	if err != nil {
@@ -106,12 +96,11 @@ func readFromFile() {
 		}
 	}
 
-	// Check if fullscreen is enabled and adjust dimensions
 	h, w = originalH, originalW
 	if Config.Fullscreen {
 		effectiveHeight := termHeight
 		if Config.Verbose {
-			effectiveHeight -= 5 // Reserve space for verbose output
+			effectiveHeight -= 5
 		}
 		if h < effectiveHeight {
 			h = effectiveHeight
@@ -121,27 +110,23 @@ func readFromFile() {
 		}
 	}
 
-	// Create game map with adjusted dimensions
 	gameMap = make([][]rune, h)
 	for i := range gameMap {
 		gameMap[i] = make([]rune, w)
 		for j := range gameMap[i] {
-			gameMap[i][j] = '.' // Initialize all cells as dead
+			gameMap[i][j] = '.'
 		}
 	}
 
-	// Determine the number of rows to read from file
 	inputHeight := originalH
 	if inputHeight > h {
 		inputHeight = h
 	}
 
-	// Initialize visited cells tracking if footprints enabled
 	if Config.Footprints {
 		InitializeFootprints()
 	}
 
-	// Read the grid from the file
 	for i := 0; i < inputHeight && scanner.Scan(); i++ {
 		rowInput := scanner.Text()
 		for j, char := range rowInput {
@@ -156,7 +141,7 @@ func readFromFile() {
 	}
 }
 
-// RunGame: runs the simulation loop until no live cells remain.
+// Runs the game simulation loop until no live cells remain
 func RunGame() {
 	for {
 		PrintMap()
@@ -167,16 +152,14 @@ func RunGame() {
 
 		UpdateMap()
 
-		// Use Config.Delay instead of a global delay variable.
 		time.Sleep(time.Duration(Config.Delay) * time.Millisecond)
 	}
 }
 
-// PrintMap: clears the console and prints the game grid.
+// Clears the console and prints the current game grid
 func PrintMap() {
 	ClearConsole()
 
-	// Use the structured Config to check if verbose output is enabled.
 	if Config.Verbose {
 		fmt.Printf(`Tick: %v
 Grid Size: %vx%v
@@ -186,7 +169,6 @@ DelayMs: %vms
 `, tick, w, h, CountLiveCells(), Config.Delay)
 	}
 
-	// Print the game map with appropriate formatting
 	for i, row := range gameMap {
 		for j, char := range row {
 			fmt.Print(GetCellDisplay(char, i, j))
@@ -197,7 +179,7 @@ DelayMs: %vms
 	tick++
 }
 
-// UpdateMap: applies game rules and updates the grid.
+// Applies game rules to update the grid state
 func UpdateMap() {
 	newMap := make([][]rune, h)
 	for i := range newMap {
@@ -206,28 +188,28 @@ func UpdateMap() {
 
 	for i := 0; i < h; i++ {
 		for j := 0; j < w; j++ {
-			n := CountNeighbors(i, j) // Now considers portal edges if enabled
+			n := CountNeighbors(i, j)
 
-			if gameMap[i][j] == '#' { // Live cell
+			if gameMap[i][j] == '#' {
 				if n > 3 || n < 2 {
-					newMap[i][j] = '.' // Dies
+					newMap[i][j] = '.'
 				} else {
-					newMap[i][j] = '#' // Survives
+					newMap[i][j] = '#'
 				}
-			} else { // Dead cell
+			} else {
 				if n == 3 {
-					newMap[i][j] = '#' // Becomes alive
+					newMap[i][j] = '#'
 				} else {
-					newMap[i][j] = '.' // Stays dead
+					newMap[i][j] = '.'
 				}
 			}
 		}
 	}
 
-	gameMap = newMap // Update the global grid state
+	gameMap = newMap
 }
 
-// PrintHelp: displays usage instructions for the program.
+// Displays usage instructions for the program
 func PrintHelp() {
 	fmt.Println(`Usage: go run main.go [options]
 

@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// GenerateRandomMap: generates a random game map with given dimensions
+// Generates a random game map with specified dimensions
 func GenerateRandomMap(dimensions string) {
 	parts := strings.Split(dimensions, "x")
 	if len(parts) != 2 {
@@ -24,14 +24,12 @@ func GenerateRandomMap(dimensions string) {
 		return
 	}
 
-	// If fullscreen is enabled, adjust dimensions to terminal size
 	if Config.Fullscreen {
 		termWidth, termHeight = GetTerminalSize()
 
-		// Leave room for status info if verbose is enabled
 		effectiveHeight := termHeight
 		if Config.Verbose {
-			effectiveHeight -= 5 // Reserve space for verbose output
+			effectiveHeight -= 5
 		}
 
 		if height < effectiveHeight {
@@ -50,9 +48,9 @@ func GenerateRandomMap(dimensions string) {
 		row := make([]rune, w)
 		for j := 0; j < w; j++ {
 			if rand.Intn(2) == 0 {
-				row[j] = '#' // live cell
+				row[j] = '#'
 			} else {
-				row[j] = '.' // dead cell
+				row[j] = '.'
 			}
 		}
 		gameMap[i] = row
