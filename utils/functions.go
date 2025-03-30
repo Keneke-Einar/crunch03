@@ -31,7 +31,10 @@ func Input() error {
 	}
 
 	if Config.File != "" {
-		readFromFile()
+		err := readFromFile()
+		if err != nil {
+			return err
+		}
 	} else {
 		var originalH, originalW int
 		fmt.Println("Enter the dimensions (height width):")
@@ -123,9 +126,8 @@ func readFromFile() error {
 		}
 	}
 
-	if originalH < 3 || originalW < 3 {
-		fmt.Println("Error: grid dimensions must be at least 3x3")
-		os.Exit(1)
+	if originalH < 2 || originalW < 2 {
+		return fmt.Errorf("Error: invalid grid size %dx%d. Minimum size is 2x2", originalH, originalW)
 	}
 
 	h, w = originalH, originalW
@@ -163,14 +165,12 @@ func readFromFile() error {
 		rowInput := scanner.Text()
 
 		if len(rowInput) != originalW {
-			fmt.Println("Error: row length in file does not match specified width")
-			os.Exit(1)
+			return fmt.Errorf("Error: row length in file does not match specified width")
 		}
 
 		for j, char := range rowInput {
 			if char != '.' && char != '#' {
-				fmt.Println("Error: grid in file can only contain '.' and '#' characters")
-				os.Exit(1)
+				return fmt.Errorf("Error: grid in file can only contain '.' and '#' characters")
 			}
 			if j < w {
 				gameMap[i][j] = char
