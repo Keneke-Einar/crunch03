@@ -40,8 +40,7 @@ func Input() error {
 		fmt.Println("Enter the dimensions (height width):")
 		_, err := fmt.Scanf("%d %d\n", &originalH, &originalW)
 		if err != nil {
-			fmt.Println("Error: invalid dimension format. Please enter two integers separated by space.")
-			os.Exit(1)
+			return fmt.Errorf("Error: invalid dimension format. Please enter two integers separated by space.")
 		}
 
 		if originalW < 3 || originalH < 3 {
@@ -82,21 +81,17 @@ func Input() error {
 
 		for i := 0; i < inputHeight; i++ {
 			rowInput := ""
-			_, err := fmt.Scanf("%s\n", &rowInput)
-			if err != nil {
-				fmt.Println("Error: failed to read row input")
-				os.Exit(1)
+			if _, err := fmt.Scanf("%s\n", &rowInput); err != nil {
+				return fmt.Errorf("Error: failed to read row input")
 			}
 
 			if len(rowInput) != originalW {
-				fmt.Println("Error: row length does not match specified width")
-				os.Exit(1)
+				return fmt.Errorf("Error: row length does not match specified width")
 			}
 
 			for j, char := range rowInput {
 				if char != '.' && char != '#' {
-					fmt.Println("Error: grid can only contain '.' and '#' characters")
-					os.Exit(1)
+					return fmt.Errorf("Error: grid can only contain '.' and '#' characters")
 				}
 				if j < w {
 					gameMap[i][j] = char
