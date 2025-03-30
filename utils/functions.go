@@ -8,13 +8,18 @@ import (
 )
 
 // Reads grid dimensions and initializes the game map
-func Input() {
+func Input() error {
 	if Config.Random != "" {
-		GenerateRandomMap(Config.Random)
+		err := GenerateRandomMap(Config.Random)
+		if err != nil {
+			return err
+		}
+
 		if Config.Footprints {
 			InitializeFootprints()
 		}
-		return
+
+		return nil
 	}
 
 	if Config.Delay == 0 {
@@ -34,6 +39,10 @@ func Input() {
 		if err != nil {
 			fmt.Println("Error: invalid dimension format. Please enter two integers separated by space.")
 			os.Exit(1)
+		}
+
+		if w < 2 || h < 2 {
+			return fmt.Errorf("invalid grid size. Minimum size is 3x3")
 		}
 
 		h, w = originalH, originalW
@@ -92,6 +101,8 @@ func Input() {
 			}
 		}
 	}
+
+	return nil
 }
 
 // Reads the game grid from a specified file
