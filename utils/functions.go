@@ -124,36 +124,32 @@ DelayMs: %vms
 
 // UpdateMap: applies game rules and updates the grid.
 func UpdateMap() {
-	// Create a new map to update cell states.
 	newMap := make([][]rune, h)
 	for i := range newMap {
 		newMap[i] = make([]rune, w)
 	}
 
-	// Iterate over each cell to apply game rules.
 	for i := 0; i < h; i++ {
 		for j := 0; j < w; j++ {
-			n := CountNeighbors(i, j) // count neighbors of cell [i][j]
+			n := CountNeighbors(i, j) // Now considers portal edges if enabled
 
-			if gameMap[i][j] == '#' { // live cell
+			if gameMap[i][j] == '#' { // Live cell
 				if n > 3 || n < 2 {
-					newMap[i][j] = '.' // cell dies
+					newMap[i][j] = '.' // Dies
 				} else {
-					newMap[i][j] = '#' // cell lives on
+					newMap[i][j] = '#' // Survives
 				}
-			} else if gameMap[i][j] == '.' { // dead cell
+			} else { // Dead cell
 				if n == 3 {
-					newMap[i][j] = '#' // cell becomes alive
+					newMap[i][j] = '#' // Becomes alive
 				} else {
-					newMap[i][j] = '.' // remains dead
+					newMap[i][j] = '.' // Stays dead
 				}
-			} else {
-				newMap[i][j] = gameMap[i][j] // for trace or other states
 			}
 		}
 	}
 
-	gameMap = newMap // update the global grid state
+	gameMap = newMap // Update the global grid state
 }
 
 // PrintHelp: displays usage instructions for the program.
