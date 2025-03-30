@@ -9,10 +9,13 @@ import (
 
 // Config holds the configuration values set by flags.
 var Config struct {
-	Help    bool
-	Verbose bool
-	Delay   int
-	Random  string
+	Help       bool
+	Verbose    bool
+	Delay      int
+	Random     string
+	Footprints bool
+	Colored    bool
+	Fullscreen bool
 }
 
 // Flag represents a command-line flag.
@@ -63,12 +66,33 @@ func processRandom(value string) error {
 	return nil
 }
 
+// processFootprints sets the Footprints flag.
+func processFootprints(value string) error {
+	Config.Footprints = true
+	return nil
+}
+
+// processColored sets the Colored flag.
+func processColored(value string) error {
+	Config.Colored = true
+	return nil
+}
+
+// processFullscreen sets the Fullscreen flag.
+func processFullscreen(value string) error {
+	Config.Fullscreen = true
+	return nil
+}
+
 // flags defines the list of supported flags.
 var flags = []Flag{
 	{Name: "help", HasValue: false, Process: processHelp},
 	{Name: "verbose", HasValue: false, Process: processVerbose},
 	{Name: "delay-ms", HasValue: true, Process: processDelay},
 	{Name: "random", HasValue: true, Process: processRandom},
+	{Name: "footprints", HasValue: false, Process: processFootprints},
+	{Name: "colored", HasValue: false, Process: processColored},
+	{Name: "fullscreen", HasValue: false, Process: processFullscreen},
 }
 
 // ParseFlags processes command-line arguments.
