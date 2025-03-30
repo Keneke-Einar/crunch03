@@ -25,6 +25,18 @@ type Flag struct {
 	Process  func(value string) error
 }
 
+var flags = []Flag{
+	{Name: "help", HasValue: false, Process: processHelp},
+	{Name: "verbose", HasValue: false, Process: processVerbose},
+	{Name: "delay-ms", HasValue: true, Process: processDelay},
+	{Name: "random", HasValue: true, Process: processRandom},
+	{Name: "footprints", HasValue: false, Process: processFootprints},
+	{Name: "colored", HasValue: false, Process: processColored},
+	{Name: "fullscreen", HasValue: false, Process: processFullscreen},
+	{Name: "edges-portal", HasValue: false, Process: processEdgesPortal},
+	{Name: "file", HasValue: true, Process: processFile},
+}
+
 // Sets the Help configuration flag
 func processHelp(value string) error {
 	Config.Help = true
@@ -94,18 +106,6 @@ func processFile(value string) error {
 func processEdgesPortal(value string) error {
 	Config.EdgesPortal = true
 	return nil
-}
-
-var flags = []Flag{
-	{Name: "help", HasValue: false, Process: processHelp},
-	{Name: "verbose", HasValue: false, Process: processVerbose},
-	{Name: "delay-ms", HasValue: true, Process: processDelay},
-	{Name: "random", HasValue: true, Process: processRandom},
-	{Name: "footprints", HasValue: false, Process: processFootprints},
-	{Name: "colored", HasValue: false, Process: processColored},
-	{Name: "fullscreen", HasValue: false, Process: processFullscreen},
-	{Name: "edges-portal", HasValue: false, Process: processEdgesPortal},
-	{Name: "file", HasValue: true, Process: processFile},
 }
 
 // Processes command-line arguments into configuration flags
