@@ -46,8 +46,20 @@ func processDelay(value string) error {
 
 // processRandom sets the Random flag value.
 func processRandom(value string) error {
-	// You might add validation for the WxH format here.
+	parts := strings.Split(value, "x")
+	if len(parts) != 2 {
+		return fmt.Errorf("invalid format for --random, expected WxH (e.g., 5x5)")
+	}
+
+	width, err1 := strconv.Atoi(parts[0])
+	height, err2 := strconv.Atoi(parts[1])
+
+	if err1 != nil || err2 != nil || width <= 0 || height <= 0 {
+		return fmt.Errorf("invalid dimensions for --random, expected positive integers (e.g., 5x5)")
+	}
+
 	Config.Random = value
+	GenerateRandomMap(value)
 	return nil
 }
 
@@ -82,6 +94,8 @@ func ParseFlags() {
 		}
 	}
 }
+
+//=====================Inner logic=====================
 
 // extractFlag splits the flag into name and value if applicable.
 func extractFlag(arg string) (string, string, bool) {
