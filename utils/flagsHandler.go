@@ -2,21 +2,20 @@ package utils
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
 
 var Config struct {
+	Colored     bool
+	Fullscreen  bool
+	Footprints  bool
+	EdgesPortal bool
 	Help        bool
 	Verbose     bool
 	Delay       int
-	Random      string
-	Footprints  bool
-	Colored     bool
-	Fullscreen  bool
-	EdgesPortal bool
 	File        string
+	Random      string
 }
 
 type Flag struct {
@@ -106,63 +105,4 @@ func processFile(value string) error {
 func processEdgesPortal(value string) error {
 	Config.EdgesPortal = true
 	return nil
-}
-
-// Processes command-line arguments into configuration flags
-func ParseFlags() {
-	args := os.Args[1:]
-
-	for _, arg := range args {
-		flagName, flagValue, valid := extractFlag(arg)
-		if !valid {
-			fmt.Printf("Error: invalid argument '%s'\n", arg)
-			os.Exit(1)
-		}
-
-		flag, found := findFlag(flagName)
-		if !found {
-			fmt.Printf("Error: unknown flag '--%s'\n", flagName)
-			os.Exit(1)
-		}
-
-		if err := processFlag(flag, flagValue); err != nil {
-			fmt.Printf("Error processing flag '--%s': %s\n", flagName, err.Error())
-			os.Exit(1)
-		}
-	}
-}
-
-// Extracts flag name and value from an argument string
-func extractFlag(arg string) (string, string, bool) {
-	if !strings.HasPrefix(arg, "--") {
-		return "", "", false
-	}
-
-	content := arg[2:]
-	if strings.Contains(content, "=") {
-		parts := strings.SplitN(content, "=", 2)
-		return parts[0], parts[1], true
-	}
-	return content, "", true
-}
-
-// Finds a flag definition by its name
-func findFlag(flagName string) (Flag, bool) {
-	for _, f := range flags {
-		if f.Name == flagName {
-			return f, true
-		}
-	}
-	return Flag{}, false
-}
-
-// Applies the processing function for a found flag
-func processFlag(flag Flag, value string) error {
-	if flag.HasValue && value == "" {
-		return fmt.Errorf("flag '--%s' requires a value", flag.Name)
-	}
-	if !flag.HasValue && value != "" {
-		return fmt.Errorf("flag '--%s' does not accept a value", flag.Name)
-	}
-	return flag.Process(value)
 }

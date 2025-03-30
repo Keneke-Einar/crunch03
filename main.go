@@ -7,7 +7,10 @@ import (
 )
 
 func main() {
-	utils.ParseFlags()
+	if err := utils.ParseFlags(); err != nil {
+		fmt.Println("Error in ParseFlags:", err)
+		os.Exit(1)
+	}
 
 	if utils.Config.Help {
 		utils.PrintHelp()
@@ -18,10 +21,9 @@ func main() {
 		utils.Config.Delay = 2500
 	}
 
-	err := utils.Input()
-	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
+	if err := utils.Input(); err != nil {
+		fmt.Println("Error in Input():", err)
+		os.Exit(2)
 	}
 
 	utils.RunGame()

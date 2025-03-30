@@ -22,8 +22,8 @@ func GenerateRandomMap(dimensions string) error {
 		return fmt.Errorf("Error: invalid dimensions for --random flag. Width and height must be positive integers.")
 	}
 
-	if w < 2 || h < 2 {
-		return fmt.Errorf("invalid grid size: %dx%d. Minimum size is 2x2", w, h)
+	if width < 3 || height < 3 {
+		return fmt.Errorf("invalid grid size. Minimum size is 3x3")
 	}
 
 	if Config.Fullscreen {
