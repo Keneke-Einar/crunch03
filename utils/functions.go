@@ -18,6 +18,10 @@ func Input() {
 		}
 		gameMap = append(gameMap, row)
 	}
+
+	if PassedFlag["fullscreen"] {
+		AdjustGridToTerminal()
+	}
 }
 
 func PrintMap() {
@@ -115,5 +119,6 @@ Options:
   --verbose			: Display the tick number, grid size, delay time, and the number of living cells
   --delay-ms=DELAY	: Set the delay time in milliseconds (accepts only integer values). Default is 2500
   --footprints  	: Add traces of visited cells, displayed as '∘'
-  --colored     : Add color to live cells and traces if footprints are enabled`)
+  --colored     : Add color to live cells and traces if footprints are enabled
+  --fullscreen  : Adjust the grid to fit the terminal size with empty cells`)
 }
