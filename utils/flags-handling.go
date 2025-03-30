@@ -7,7 +7,6 @@ import (
 	"strings"
 )
 
-// Config holds the configuration values set by flags.
 var Config struct {
 	Help        bool
 	Verbose     bool
@@ -20,26 +19,25 @@ var Config struct {
 	File        string
 }
 
-// Flag represents a command-line flag.
 type Flag struct {
 	Name     string
 	HasValue bool
 	Process  func(value string) error
 }
 
-// processHelp sets the Help flag.
+// Sets the Help configuration flag
 func processHelp(value string) error {
 	Config.Help = true
 	return nil
 }
 
-// processVerbose sets the Verbose flag.
+// Sets the Verbose configuration flag
 func processVerbose(value string) error {
 	Config.Verbose = true
 	return nil
 }
 
-// processDelay sets the Delay value.
+// Sets the Delay configuration value
 func processDelay(value string) error {
 	d, err := strconv.Atoi(value)
 	if err != nil {
@@ -49,7 +47,7 @@ func processDelay(value string) error {
 	return nil
 }
 
-// processRandom sets the Random flag value.
+// Sets the Random configuration value and generates a random map
 func processRandom(value string) error {
 	parts := strings.Split(value, "x")
 	if len(parts) != 2 {
@@ -68,36 +66,36 @@ func processRandom(value string) error {
 	return nil
 }
 
-// processFootprints sets the Footprints flag.
+// Sets the Footprints configuration flag
 func processFootprints(value string) error {
 	Config.Footprints = true
 	return nil
 }
 
-// processColored sets the Colored flag.
+// Sets the Colored configuration flag
 func processColored(value string) error {
 	Config.Colored = true
 	return nil
 }
 
-// processFullscreen sets the Fullscreen flag.
+// Sets the Fullscreen configuration flag
 func processFullscreen(value string) error {
 	Config.Fullscreen = true
 	return nil
 }
 
+// Sets the File configuration value
 func processFile(value string) error {
 	Config.File = value
 	return nil
 }
 
-// processEdgesPortal enables portal edges.
+// Enables portal behavior for map edges
 func processEdgesPortal(value string) error {
 	Config.EdgesPortal = true
 	return nil
 }
 
-// flags defines the list of supported flags.
 var flags = []Flag{
 	{Name: "help", HasValue: false, Process: processHelp},
 	{Name: "verbose", HasValue: false, Process: processVerbose},
@@ -106,9 +104,11 @@ var flags = []Flag{
 	{Name: "footprints", HasValue: false, Process: processFootprints},
 	{Name: "colored", HasValue: false, Process: processColored},
 	{Name: "fullscreen", HasValue: false, Process: processFullscreen},
+	{Name: "edges-portal", HasValue: false, Process: processEdgesPortal},
+	{Name: "file", HasValue: true, Process: processFile},
 }
 
-// ParseFlags processes command-line arguments.
+// Processes command-line arguments into configuration flags
 func ParseFlags() {
 	args := os.Args[1:]
 
@@ -132,9 +132,7 @@ func ParseFlags() {
 	}
 }
 
-//=====================Inner logic=====================
-
-// extractFlag splits the flag into name and value if applicable.
+// Extracts flag name and value from an argument string
 func extractFlag(arg string) (string, string, bool) {
 	if !strings.HasPrefix(arg, "--") {
 		return "", "", false
@@ -148,7 +146,7 @@ func extractFlag(arg string) (string, string, bool) {
 	return content, "", true
 }
 
-// findFlag searches for a flag definition by name.
+// Finds a flag definition by its name
 func findFlag(flagName string) (Flag, bool) {
 	for _, f := range flags {
 		if f.Name == flagName {
@@ -158,7 +156,7 @@ func findFlag(flagName string) (Flag, bool) {
 	return Flag{}, false
 }
 
-// processFlag applies the found flag's processing function.
+// Applies the processing function for a found flag
 func processFlag(flag Flag, value string) error {
 	if flag.HasValue && value == "" {
 		return fmt.Errorf("flag '--%s' requires a value", flag.Name)
