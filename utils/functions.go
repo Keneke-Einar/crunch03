@@ -89,12 +89,12 @@ func Input() error {
 }
 
 // Reads the game grid from a specified file
-func readFromFile() {
+func readFromFile() error {
 	file, err := os.Open(Config.File)
 	if err != nil {
-		fmt.Println("Error: cannot open file:", err)
-		os.Exit(1)
+		return fmt.Errorf("Error: cannot open file: %w", err)
 	}
+
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
@@ -102,8 +102,7 @@ func readFromFile() {
 	if scanner.Scan() {
 		_, err := fmt.Sscanf(scanner.Text(), "%d %d", &originalH, &originalW)
 		if err != nil {
-			fmt.Println("Error: invalid dimensions in file")
-			os.Exit(1)
+			return fmt.Errorf("Error: invalid dimensions in file")
 		}
 	}
 
@@ -146,10 +145,12 @@ func readFromFile() {
 			}
 		}
 	}
+
 	if err := scanner.Err(); err != nil {
-		fmt.Println("Error: reading file:", err)
-		os.Exit(1)
+		return fmt.Errorf("Error: reading file: %w", err)
 	}
+
+	return nil
 }
 
 // Runs the game simulation loop until no live cells remain
