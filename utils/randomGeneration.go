@@ -24,6 +24,24 @@ func GenerateRandomMap(dimensions string) {
 		return
 	}
 
+	// If fullscreen is enabled, adjust dimensions to terminal size
+	if Config.Fullscreen {
+		termWidth, termHeight = GetTerminalSize()
+
+		// Leave room for status info if verbose is enabled
+		effectiveHeight := termHeight
+		if Config.Verbose {
+			effectiveHeight -= 5 // Reserve space for verbose output
+		}
+
+		if height < effectiveHeight {
+			height = effectiveHeight
+		}
+		if width < termWidth {
+			width = termWidth
+		}
+	}
+
 	w, h = width, height
 	gameMap = make([][]rune, h)
 

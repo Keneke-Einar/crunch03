@@ -8,22 +8,76 @@ import (
 // Input: reads grid dimensions and initializes game map.
 func Input() {
 	if Config.Random != "" {
-		fmt.Println("Random grid generation not implemented yet.")
+		GenerateRandomMap(Config.Random)
+		if Config.Footprints {
+			InitializeFootprints()
+		}
 		return
 	}
 
-	fmt.Println("Enter the dimensions (height width):")
-	fmt.Scanf("%d %d\n", &h, &w)
+	// Set default delay if not specified
+	if Config.Delay == 0 {
+		Config.Delay = 2500
+	}
 
-	// Read rows until the grid is filled.
-	for len(gameMap) < h {
-		row := []rune{}
+	// Initialize terminal size if fullscreen is enabled
+	if Config.Fullscreen {
+		termWidth, termHeight = GetTerminalSize()
+	}
+
+	var originalH, originalW int
+	fmt.Println("Enter the dimensions (height width):")
+	fmt.Scanf("%d %d\n", &originalH, &originalW)
+
+	// Check if fullscreen is enabled and adjust dimensions
+	h, w = originalH, originalW
+	if Config.Fullscreen {
+		effectiveHeight := termHeight
+		if Config.Verbose {
+			effectiveHeight -= 5 // Reserve space for verbose output
+		}
+
+		// Adjust dimensions to be at least the terminal size
+		if h < effectiveHeight {
+			h = effectiveHeight
+		}
+		if w < termWidth {
+			w = termWidth
+		}
+	}
+
+	// Create game map with adjusted dimensions
+	gameMap = make([][]rune, h)
+	for i := range gameMap {
+		gameMap[i] = make([]rune, w)
+		// Initialize all cells as dead
+		for j := range gameMap[i] {
+			gameMap[i][j] = '.'
+		}
+	}
+
+	// Determine the number of rows to read from input (originalH, up to adjusted h)
+	inputHeight := originalH
+	if inputHeight > h {
+		inputHeight = h
+	}
+
+	// Initialize visited cells tracking if footprints enabled
+	if Config.Footprints {
+		InitializeFootprints()
+	}
+
+	// Read the actual input grid up to inputHeight rows
+	for i := 0; i < inputHeight; i++ {
 		rowInput := ""
 		fmt.Scanf("%s\n", &rowInput)
-		for _, char := range rowInput {
-			row = append(row, char)
+
+		// Copy input to game map, up to adjusted width (w)
+		for j, char := range rowInput {
+			if j < w {
+				gameMap[i][j] = char
+			}
 		}
-		gameMap = append(gameMap, row)
 	}
 }
 
@@ -52,13 +106,15 @@ func PrintMap() {
 		fmt.Printf(`Tick: %v
 Grid Size: %vx%v
 Live Cells: %v
-DelayMs: %v
+DelayMs: %vms
 
 `, tick, w, h, CountLiveCells(), Config.Delay)
 	}
-	for _, row := range gameMap {
-		for _, char := range row {
-			fmt.Print(charMap[char])
+
+	// Print the game map with appropriate formatting
+	for i, row := range gameMap {
+		for j, char := range row {
+			fmt.Print(GetCellDisplay(char, i, j))
 		}
 		fmt.Println("")
 	}
@@ -108,5 +164,8 @@ Options:
   --help            : Show this message and exit
   --verbose         : Display tick number, grid size, delay time, and live cell count
   --delay-ms=DELAY  : Set the delay time in milliseconds (accepts only integer values). Default is 2500
-  --random=WxH      : Generate a random grid of the specified width (W) and height (H)`)
+  --random=WxH      : Generate a random grid of the specified width (W) and height (H)
+  --footprints      : Add traces of visited cells, displayed as '∘'
+  --colored         : Add color to live cells and traces if footprints are enabled
+  --fullscreen      : Adjust the grid to fit the terminal size with empty cells`)
 }

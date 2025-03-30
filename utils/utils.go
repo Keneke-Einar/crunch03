@@ -2,19 +2,54 @@ package utils
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 )
 
 var charMap map[rune]string = map[rune]string{
 	'#': "×", // live cell
 	'.': "·", // dead cell
-	'o': ".", // trace of a cell. By default, looks the same as the dead cell, but with the footprints flag, it changes to "∘"
+	'o': "∘", // trace of a cell when footprints enabled
 }
 
-var (
-	h, w    int
-	tick    int = 1
-	gameMap [][]rune
+// ANSI color codes
+const (
+	Reset  = "\033[0m"
+	Red    = "\033[31m"
+	Green  = "\033[32m"
+	Yellow = "\033[33m"
+	Blue   = "\033[34m"
+	Purple = "\033[35m"
+	Cyan   = "\033[36m"
+	White  = "\033[37m"
 )
+
+var (
+	h, w       int
+	tick       int = 1
+	gameMap    [][]rune
+	termWidth  int
+	termHeight int
+	hasVisited [][]bool // To track which cells have been alive
+)
+
+// GetTerminalSize: gets the current terminal dimensions
+func GetTerminalSize() (width, height int) {
+	// Default fallback values
+	width, height = 80, 24
+
+	// Only implemented on Unix-like systems
+	if os.Getenv("TERM") != "" {
+		cmd := exec.Command("stty", "size")
+		cmd.Stdin = os.Stdin
+		out, err := cmd.Output()
+		if err == nil {
+			fmt.Sscanf(string(out), "%d %d", &height, &width)
+		}
+	}
+
+	return width, height
+}
 
 // ClearConsole: clears the console
 func ClearConsole() {
@@ -59,4 +94,44 @@ func CountNeighbors(row, col int) int {
 	}
 
 	return count
+}
+
+// InitializeFootprints: initializes the visited cells tracking
+func InitializeFootprints() {
+	hasVisited = make([][]bool, h)
+	for i := range hasVisited {
+		hasVisited[i] = make([]bool, w)
+	}
+}
+
+// GetCellDisplay: returns the appropriate display for a cell based on its state and config
+func GetCellDisplay(cell rune, row, col int) string {
+	var display string
+
+	// If the cell is currently alive
+	if cell == '#' {
+		display = charMap[cell]
+		// Mark as visited for future footprints
+		if Config.Footprints {
+			hasVisited[row][col] = true
+		}
+
+		// Apply color if enabled
+		if Config.Colored {
+			return Cyan + display + Reset
+		}
+	} else if cell == '.' && Config.Footprints && hasVisited[row][col] {
+		// Cell is dead but was previously alive (footprint)
+		display = charMap['o']
+
+		// Apply color if both footprints and colored are enabled
+		if Config.Colored {
+			return Yellow + display + Reset
+		}
+	} else {
+		// Normal dead cell
+		display = charMap[cell]
+	}
+
+	return display
 }
