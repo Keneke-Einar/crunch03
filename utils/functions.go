@@ -35,9 +35,13 @@ func Input() error {
 	} else {
 		var originalH, originalW int
 		fmt.Println("Enter the dimensions (height width):")
-		fmt.Scanf("%d %d\n", &originalH, &originalW)
+		_, err := fmt.Scanf("%d %d\n", &originalH, &originalW)
+		if err != nil {
+			fmt.Println("Error: invalid dimension format. Please enter two integers separated by space.")
+			os.Exit(1)
+		}
 
-		if w < 2 || h < 2 {
+		if originalW < 3 || originalH < 3 {
 			return fmt.Errorf("invalid grid size. Minimum size is 3x3")
 		}
 
@@ -75,9 +79,22 @@ func Input() error {
 
 		for i := 0; i < inputHeight; i++ {
 			rowInput := ""
-			fmt.Scanf("%s\n", &rowInput)
+			_, err := fmt.Scanf("%s\n", &rowInput)
+			if err != nil {
+				fmt.Println("Error: failed to read row input")
+				os.Exit(1)
+			}
+
+			if len(rowInput) != originalW {
+				fmt.Println("Error: row length does not match specified width")
+				os.Exit(1)
+			}
 
 			for j, char := range rowInput {
+				if char != '.' && char != '#' {
+					fmt.Println("Error: grid can only contain '.' and '#' characters")
+					os.Exit(1)
+				}
 				if j < w {
 					gameMap[i][j] = char
 				}
@@ -104,6 +121,11 @@ func readFromFile() error {
 		if err != nil {
 			return fmt.Errorf("Error: invalid dimensions in file")
 		}
+	}
+
+	if originalH < 3 || originalW < 3 {
+		fmt.Println("Error: grid dimensions must be at least 3x3")
+		os.Exit(1)
 	}
 
 	h, w = originalH, originalW
@@ -139,7 +161,17 @@ func readFromFile() error {
 
 	for i := 0; i < inputHeight && scanner.Scan(); i++ {
 		rowInput := scanner.Text()
+
+		if len(rowInput) != originalW {
+			fmt.Println("Error: row length in file does not match specified width")
+			os.Exit(1)
+		}
+
 		for j, char := range rowInput {
+			if char != '.' && char != '#' {
+				fmt.Println("Error: grid in file can only contain '.' and '#' characters")
+				os.Exit(1)
+			}
 			if j < w {
 				gameMap[i][j] = char
 			}
@@ -226,13 +258,14 @@ func PrintHelp() {
 	fmt.Println(`Usage: go run main.go [options]
 
 Options:
-  --help            : Show this message and exit
-  --verbose         : Display tick number, grid size, delay time, and live cell count
-  --delay-ms=DELAY  : Set the delay time in milliseconds (accepts only integer values). Default is 2500
-  --random=WxH      : Generate a random grid of the specified width (W) and height (H)
-  --footprints      : Add traces of visited cells, displayed as '∘'
-  --colored         : Add color to live cells and traces if footprints are enabled
-  --fullscreen      : Adjust the grid to fit the terminal size with empty cells
-  --file=X          : Load the initial grid from a specified file
+  --help        : Show the help message and exit
+  --verbose     : Display detailed information about the simulation, including grid size, number of ticks, speed, and map name
+  --delay-ms=X  : Set the animation speed in milliseconds. Default is 2500 milliseconds
+  --file=X      : Load the initial grid from a specified file
+  --edges-portal: Enable portal edges where cells that exit the grid appear on the opposite side
+  --random=WxH  : Generate a random grid of the specified width (W) and height (H)
+  --fullscreen  : Adjust the grid to fit the terminal size with empty cells
+  --footprints  : Add traces of visited cells, displayed as '∘'
+  --colored     : Add color to live cells and traces if footprints are enabled
 `)
 }
