@@ -51,8 +51,8 @@ func processVerbose(value string) error {
 // Sets the Delay configuration value
 func processDelay(value string) error {
 	d, err := strconv.Atoi(value)
-	if err != nil {
-		return fmt.Errorf("invalid delay value: %s", value)
+	if err != nil || d <= 0 {
+		return fmt.Errorf("invalid delay value: %s, expected a positive integer", value)
 	}
 	Config.Delay = d
 	return nil
@@ -105,4 +105,27 @@ func processFile(value string) error {
 func processEdgesPortal(value string) error {
 	Config.EdgesPortal = true
 	return nil
+}
+
+// Displays usage instructions for the program
+func PrintHelp() {
+	fmt.Println(`Usage: go run main.go [options]
+
+Options:
+  --help		: Show the help message and exit
+  --verbose		: Display detailed information about the simulation,
+				including grid size, number of ticks, speed,
+				and map name
+  --delay-ms=X		: Set the animation speed in milliseconds.
+				Default is 2500 milliseconds
+  --file=X		: Load the initial grid from a specified file
+  --edges-portal	: Enable portal edges where cells that exit the
+				grid appear on the opposite side
+  --random=WxH		: Generate a random grid of the specified width (W)
+				and height (H)
+  --fullscreen		: Adjust the grid to fit the terminal size with
+				empty cells
+  --footprints		: Add traces of visited cells, displayed as '∘'
+  --colored		: Add color to live cells and traces if footprints
+				are enabled`)
 }

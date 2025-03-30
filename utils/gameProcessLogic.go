@@ -28,7 +28,7 @@ func printMap() {
 		fmt.Printf(`Tick: %v
 Grid Size: %vx%v
 Live Cells: %v
-DelayMs: %vms
+DelayMs: %v ms
 
 `, tick, w, h, countLiveCells(), Config.Delay)
 	}
