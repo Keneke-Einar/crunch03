@@ -1,6 +1,10 @@
 package main
 
-import "crunch03/utils"
+import (
+	"crunch03/utils"
+	"fmt"
+	"os"
+)
 
 func main() {
 	utils.ParseFlags()
@@ -14,6 +18,11 @@ func main() {
 		utils.Config.Delay = 2500
 	}
 
-	utils.Input()
+	err := utils.Input()
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+
 	utils.RunGame()
 }
