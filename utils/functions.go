@@ -30,7 +30,11 @@ func Input() {
 	} else {
 		var originalH, originalW int
 		fmt.Println("Enter the dimensions (height width):")
-		fmt.Scanf("%d %d\n", &originalH, &originalW)
+		_, err := fmt.Scanf("%d %d\n", &originalH, &originalW)
+		if err != nil {
+			fmt.Println("Error: invalid dimension format. Please enter two integers separated by space.")
+			os.Exit(1)
+		}
 
 		h, w = originalH, originalW
 		if Config.Fullscreen {
@@ -66,9 +70,22 @@ func Input() {
 
 		for i := 0; i < inputHeight; i++ {
 			rowInput := ""
-			fmt.Scanf("%s\n", &rowInput)
+			_, err := fmt.Scanf("%s\n", &rowInput)
+			if err != nil {
+				fmt.Println("Error: failed to read row input")
+				os.Exit(1)
+			}
+
+			if len(rowInput) != originalW {
+				fmt.Println("Error: row length does not match specified width")
+				os.Exit(1)
+			}
 
 			for j, char := range rowInput {
+				if char != '.' && char != '#' {
+					fmt.Println("Error: grid can only contain '.' and '#' characters")
+					os.Exit(1)
+				}
 				if j < w {
 					gameMap[i][j] = char
 				}
@@ -94,6 +111,11 @@ func readFromFile() {
 			fmt.Println("Error: invalid dimensions in file")
 			os.Exit(1)
 		}
+	}
+
+	if originalH < 3 || originalW < 3 {
+		fmt.Println("Error: grid dimensions must be at least 3x3")
+		os.Exit(1)
 	}
 
 	h, w = originalH, originalW
@@ -129,7 +151,17 @@ func readFromFile() {
 
 	for i := 0; i < inputHeight && scanner.Scan(); i++ {
 		rowInput := scanner.Text()
+
+		if len(rowInput) != originalW {
+			fmt.Println("Error: row length in file does not match specified width")
+			os.Exit(1)
+		}
+
 		for j, char := range rowInput {
+			if char != '.' && char != '#' {
+				fmt.Println("Error: grid in file can only contain '.' and '#' characters")
+				os.Exit(1)
+			}
 			if j < w {
 				gameMap[i][j] = char
 			}
