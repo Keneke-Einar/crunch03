@@ -9,19 +9,21 @@ import (
 )
 
 // Generates a random game map with specified dimensions
-func GenerateRandomMap(dimensions string) {
+func GenerateRandomMap(dimensions string) error {
 	parts := strings.Split(dimensions, "x")
 	if len(parts) != 2 {
-		fmt.Println("Error: invalid format for --random flag. Use --random=WxH")
-		return
+		return fmt.Errorf("Error: invalid format for --random flag. Use --random=WxH")
 	}
 
 	width, errW := strconv.Atoi(parts[0])
 	height, errH := strconv.Atoi(parts[1])
 
 	if errW != nil || errH != nil || width <= 0 || height <= 0 {
-		fmt.Println("Error: invalid dimensions for --random flag. Width and height must be positive integers.")
-		return
+		return fmt.Errorf("Error: invalid dimensions for --random flag. Width and height must be positive integers.")
+	}
+
+	if w < 2 || h < 2 {
+		return fmt.Errorf("invalid grid size: %dx%d. Minimum size is 2x2", w, h)
 	}
 
 	if Config.Fullscreen {
@@ -55,4 +57,6 @@ func GenerateRandomMap(dimensions string) {
 		}
 		gameMap[i] = row
 	}
+
+	return nil
 }
