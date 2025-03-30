@@ -17,6 +17,7 @@ var Config struct {
 	Colored     bool
 	Fullscreen  bool
 	EdgesPortal bool
+	File        string
 }
 
 // Flag represents a command-line flag.
@@ -85,6 +86,11 @@ func processFullscreen(value string) error {
 	return nil
 }
 
+func processFile(value string) error {
+	Config.File = value
+	return nil
+}
+
 // processEdgesPortal enables portal edges.
 func processEdgesPortal(value string) error {
 	Config.EdgesPortal = true
@@ -100,7 +106,6 @@ var flags = []Flag{
 	{Name: "footprints", HasValue: false, Process: processFootprints},
 	{Name: "colored", HasValue: false, Process: processColored},
 	{Name: "fullscreen", HasValue: false, Process: processFullscreen},
-	{Name: "edges-portal", HasValue: false, Process: processEdgesPortal},
 }
 
 // ParseFlags processes command-line arguments.
