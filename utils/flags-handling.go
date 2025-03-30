@@ -10,6 +10,7 @@ var PassedFlag map[string]bool = map[string]bool{
 	"help":       false,
 	"verbose":    false,
 	"footprints": false,
+	"colored":    false,
 }
 
 var delay int = 2500 // sourceFilename string = ""

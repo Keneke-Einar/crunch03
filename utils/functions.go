@@ -37,7 +37,18 @@ DelayMs: %v
 	// print the map
 	for _, row := range gameMap {
 		for _, char := range row {
-			fmt.Print(charMap[char])
+			if PassedFlag["colored"] {
+				switch char {
+				case '#':
+					fmt.Print("\033[31m" + charMap[char] + "\033[0m") // Red for live cells
+				case 'o':
+					fmt.Print("\033[34m" + charMap[char] + "\033[0m") // Blue for footprints
+				default:
+					fmt.Print(charMap[char])
+				}
+			} else {
+				fmt.Print(charMap[char])
+			}
 		}
 		fmt.Println("")
 	}
@@ -103,5 +114,6 @@ Options:
   --help			: Show this message and exit
   --verbose			: Display the tick number, grid size, delay time, and the number of living cells
   --delay-ms=DELAY	: Set the delay time in milliseconds (accepts only integer values). Default is 2500
-  --footprints  	: Add traces of visited cells, displayed as '∘'`)
+  --footprints  	: Add traces of visited cells, displayed as '∘'
+  --colored     : Add color to live cells and traces if footprints are enabled`)
 }
