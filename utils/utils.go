@@ -16,10 +16,12 @@ var (
 	gameMap [][]rune
 )
 
+// ClearConsole: clears the console
 func ClearConsole() {
 	fmt.Print("\033[H\033[2J")
 }
 
+// CountLiveCells: counts the number of live cells
 func CountLiveCells() int {
 	count := 0
 
@@ -34,47 +36,26 @@ func CountLiveCells() int {
 	return count
 }
 
+// CountNeighbors: counts the number of live neighbors of a cell
 func CountNeighbors(row, col int) int {
 	count := 0
 
-	// upper neighbor
-	if row-1 >= 0 && gameMap[row-1][col] == '#' {
-		count++
+	directions := [8][2]int{
+		{-1, 0},  // Up
+		{1, 0},   // Down
+		{0, -1},  // Left
+		{0, 1},   // Right
+		{-1, -1}, // Upper-left diagonal
+		{-1, 1},  // Upper-right diagonal
+		{1, -1},  // Lower-left diagonal
+		{1, 1},   // Lower-right diagonal
 	}
 
-	// lower neighbor
-	if row+1 < h && gameMap[row+1][col] == '#' {
-		count++
-	}
-
-	// neighbor on the right
-	if col+1 < w && gameMap[row][col+1] == '#' {
-		count++
-	}
-
-	// neighbor on the left
-	if col-1 >= 0 && gameMap[row][col-1] == '#' {
-		count++
-	}
-
-	// upper left neighbor
-	if row-1 >= 0 && col-1 >= 0 && gameMap[row-1][col-1] == '#' {
-		count++
-	}
-
-	// upper right neighbor
-	if row-1 >= 0 && col+1 < w && gameMap[row-1][col+1] == '#' {
-		count++
-	}
-
-	// lower left neighbor
-	if row+1 < h && col-1 >= 0 && gameMap[row+1][col-1] == '#' {
-		count++
-	}
-
-	// lower right neighbor
-	if row+1 < h && col+1 < w && gameMap[row+1][col+1] == '#' {
-		count++
+	for _, d := range directions {
+		nRow, nCol := row+d[0], col+d[1]
+		if nRow >= 0 && nRow < h && nCol >= 0 && nCol < w && gameMap[nRow][nCol] == '#' {
+			count++
+		}
 	}
 
 	return count
