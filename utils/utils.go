@@ -7,7 +7,7 @@ import (
 var charMap map[rune]string = map[rune]string{
 	'#': "×", // live cell
 	'.': "·", // dead cell
-	'o': ".", // trace of a cell. By default, looks the same as the dead cell, but with the footprints flag, it changes to "∘"
+	'o': "∘", // trace of a cell. By default, looks the same as the dead cell, but with the footprints flag, it changes to "∘"
 }
 
 var (

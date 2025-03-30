@@ -52,8 +52,8 @@ func UpdateMap() {
 		newMap[i] = make([]rune, w)
 	}
 
-	for i := range h {
-		for j := range w {
+	for i := 0; i < h; i++ {
+		for j := 0; j < w; j++ {
 			// count the number of neighbors of that cell
 			n := CountNeighbors(i, j)
 
@@ -63,7 +63,7 @@ func UpdateMap() {
 				} else {
 					newMap[i][j] = '#' // lives further
 				}
-			} else if gameMap[i][j] == '.' { // if it's a dead cell
+			} else if gameMap[i][j] == '.' || gameMap[i][j] == 'o' { // if it's a dead cell or footprint
 				if n == 3 {
 					newMap[i][j] = '#' // make it live
 				} else {
@@ -73,6 +73,10 @@ func UpdateMap() {
 				newMap[i][j] = gameMap[i][j] // if it's a trace
 			}
 		}
+	}
+
+	if PassedFlag["footprints"] {
+		newMap = SaveFootprints(gameMap, newMap)
 	}
 
 	gameMap = newMap // update the global map
@@ -98,5 +102,6 @@ func PrintHelp() {
 Options:
   --help			: Show this message and exit
   --verbose			: Display the tick number, grid size, delay time, and the number of living cells
-  --delay-ms=DELAY	: Set the delay time in milliseconds (accepts only integer values). Default is 2500`)
+  --delay-ms=DELAY	: Set the delay time in milliseconds (accepts only integer values). Default is 2500
+  --footprints  	: Add traces of visited cells, displayed as '∘'`)
 }
