@@ -38,7 +38,7 @@ func readFromUserInput() error {
 	var originalH, originalW int
 	fmt.Println("Enter the dimensions (height width):")
 	if _, err := fmt.Scanf("%d %d\n", &originalH, &originalW); err != nil {
-		return fmt.Errorf("Error: invalid dimension format. Please enter two integers separated by space.")
+		return fmt.Errorf("error: invalid dimension format. Please enter two integers separated by space")
 	}
 
 	if err := validateGridSize(originalH, originalW); err != nil {
@@ -53,7 +53,7 @@ func readFromUserInput() error {
 func readFromFile() error {
 	file, err := os.Open(Config.File)
 	if err != nil {
-		return fmt.Errorf("Error: cannot open file: %w", err)
+		return fmt.Errorf("error: cannot open file: %w", err)
 	}
 	defer file.Close()
 
@@ -61,7 +61,7 @@ func readFromFile() error {
 	var originalH, originalW int
 	if scanner.Scan() {
 		if _, err := fmt.Sscanf(scanner.Text(), "%d %d", &originalH, &originalW); err != nil {
-			return fmt.Errorf("Error: invalid dimensions in file")
+			return fmt.Errorf("error: invalid dimensions in file")
 		}
 	}
 
@@ -116,7 +116,7 @@ func populateGridFromFile(scanner *bufio.Scanner, originalH, originalW int) erro
 	}
 
 	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("Error: reading file: %w", err)
+		return fmt.Errorf("error: reading file: %w", err)
 	}
 	return nil
 }
@@ -124,11 +124,11 @@ func populateGridFromFile(scanner *bufio.Scanner, originalH, originalW int) erro
 // Validates a row of grid input
 func validateRowInput(rowInput string, expectedWidth int) error {
 	if len(rowInput) != expectedWidth {
-		return fmt.Errorf("Error: row length does not match specified width")
+		return fmt.Errorf("error: row length does not match specified width")
 	}
 	for _, char := range rowInput {
 		if char != '.' && char != '#' {
-			return fmt.Errorf("Error: grid can only contain '.' and '#' characters")
+			return fmt.Errorf("error: grid can only contain '.' and '#' characters")
 		}
 	}
 	return nil
@@ -139,7 +139,7 @@ func populateGridFromUser(originalH, originalW int) error {
 	for i := 0; i < originalH; i++ {
 		var rowInput string
 		if _, err := fmt.Scanf("%s\n", &rowInput); err != nil {
-			return fmt.Errorf("Error: failed to read row input")
+			return fmt.Errorf("error: failed to read row input")
 		}
 
 		if err := validateRowInput(rowInput, originalW); err != nil {
@@ -156,7 +156,7 @@ func populateGridFromUser(originalH, originalW int) error {
 // Validates the grid size
 func validateGridSize(h, w int) error {
 	if h < 3 || w < 3 {
-		return fmt.Errorf("Error: invalid grid size %dx%d. Minimum size is 3x3", h, w)
+		return fmt.Errorf("error: invalid grid size %dx%d. Minimum size is 3x3", h, w)
 	}
 	return nil
 }

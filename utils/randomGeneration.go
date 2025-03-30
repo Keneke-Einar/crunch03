@@ -24,17 +24,17 @@ func GenerateRandomMap(dimensions string) error {
 func parseDimensions(dimensions string) (int, int, error) {
 	parts := strings.Split(dimensions, "x")
 	if len(parts) != 2 {
-		return 0, 0, fmt.Errorf("Error: invalid format for --random flag. Use --random=WxH")
+		return 0, 0, fmt.Errorf("error: invalid format for --random flag. Use --random=WxH")
 	}
 
 	width, errW := strconv.Atoi(parts[0])
 	height, errH := strconv.Atoi(parts[1])
 	if errW != nil || errH != nil || width <= 0 || height <= 0 {
-		return 0, 0, fmt.Errorf("Error: invalid dimensions for --random flag. Width and height must be positive integers.")
+		return 0, 0, fmt.Errorf("error: invalid dimensions for --random flag. Width and height must be positive integers")
 	}
 
 	if width < 3 || height < 3 {
-		return 0, 0, fmt.Errorf("Error: invalid grid size. Minimum size is 3x3")
+		return 0, 0, fmt.Errorf("error: invalid grid size. Minimum size is 3x3")
 	}
 
 	return width, height, nil
