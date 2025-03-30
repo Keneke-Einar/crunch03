@@ -9,13 +9,14 @@ import (
 
 // Config holds the configuration values set by flags.
 var Config struct {
-	Help       bool
-	Verbose    bool
-	Delay      int
-	Random     string
-	Footprints bool
-	Colored    bool
-	Fullscreen bool
+	Help        bool
+	Verbose     bool
+	Delay       int
+	Random      string
+	Footprints  bool
+	Colored     bool
+	Fullscreen  bool
+	EdgesPortal bool
 }
 
 // Flag represents a command-line flag.
@@ -84,6 +85,12 @@ func processFullscreen(value string) error {
 	return nil
 }
 
+// processEdgesPortal enables portal edges.
+func processEdgesPortal(value string) error {
+	Config.EdgesPortal = true
+	return nil
+}
+
 // flags defines the list of supported flags.
 var flags = []Flag{
 	{Name: "help", HasValue: false, Process: processHelp},
@@ -93,6 +100,7 @@ var flags = []Flag{
 	{Name: "footprints", HasValue: false, Process: processFootprints},
 	{Name: "colored", HasValue: false, Process: processColored},
 	{Name: "fullscreen", HasValue: false, Process: processFullscreen},
+	{Name: "edges-portal", HasValue: false, Process: processEdgesPortal},
 }
 
 // ParseFlags processes command-line arguments.

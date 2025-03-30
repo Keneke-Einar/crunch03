@@ -35,10 +35,8 @@ var (
 
 // GetTerminalSize: gets the current terminal dimensions
 func GetTerminalSize() (width, height int) {
-	// Default fallback values
 	width, height = 80, 24
 
-	// Only implemented on Unix-like systems
 	if os.Getenv("TERM") != "" {
 		cmd := exec.Command("stty", "size")
 		cmd.Stdin = os.Stdin
@@ -86,13 +84,33 @@ func CountNeighbors(row, col int) int {
 		{1, 1},   // Lower-right diagonal
 	}
 
-	for _, d := range directions {
-		nRow, nCol := row+d[0], col+d[1]
-		if nRow >= 0 && nRow < h && nCol >= 0 && nCol < w && gameMap[nRow][nCol] == '#' {
+	for _, offset := range directions {
+		ni, nj := row+offset[0], col+offset[1]
+
+		if Config.EdgesPortal {
+			// Wrap around to the opposite side if out of bounds
+			if ni < 0 {
+				ni = h - 1
+			} else if ni >= h {
+				ni = 0
+			}
+
+			if nj < 0 {
+				nj = w - 1
+			} else if nj >= w {
+				nj = 0
+			}
+		} else {
+			// Normal boundary conditions (ignore out-of-bounds)
+			if ni < 0 || ni >= h || nj < 0 || nj >= w {
+				continue
+			}
+		}
+
+		if gameMap[ni][nj] == '#' {
 			count++
 		}
 	}
-
 	return count
 }
 
