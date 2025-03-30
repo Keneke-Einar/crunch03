@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"bufio"
 	"fmt"
+	"os" // Added for file handling
 	"time"
 )
 
@@ -25,9 +27,84 @@ func Input() {
 		termWidth, termHeight = GetTerminalSize()
 	}
 
+	if Config.File != "" {
+		readFromFile()
+	} else {
+		var originalH, originalW int
+		fmt.Println("Enter the dimensions (height width):")
+		fmt.Scanf("%d %d\n", &originalH, &originalW)
+
+		// Check if fullscreen is enabled and adjust dimensions
+		h, w = originalH, originalW
+		if Config.Fullscreen {
+			effectiveHeight := termHeight
+			if Config.Verbose {
+				effectiveHeight -= 5 // Reserve space for verbose output
+			}
+
+			// Adjust dimensions to be at least the terminal size
+			if h < effectiveHeight {
+				h = effectiveHeight
+			}
+			if w < termWidth {
+				w = termWidth
+			}
+		}
+
+		// Create game map with adjusted dimensions
+		gameMap = make([][]rune, h)
+		for i := range gameMap {
+			gameMap[i] = make([]rune, w)
+			// Initialize all cells as dead
+			for j := range gameMap[i] {
+				gameMap[i][j] = '.'
+			}
+		}
+
+		// Determine the number of rows to read from input (originalH, up to adjusted h)
+		inputHeight := originalH
+		if inputHeight > h {
+			inputHeight = h
+		}
+
+		// Initialize visited cells tracking if footprints enabled
+		if Config.Footprints {
+			InitializeFootprints()
+		}
+
+		// Read the actual input grid up to inputHeight rows
+		for i := 0; i < inputHeight; i++ {
+			rowInput := ""
+			fmt.Scanf("%s\n", &rowInput)
+
+			// Copy input to game map, up to adjusted width (w)
+			for j, char := range rowInput {
+				if j < w {
+					gameMap[i][j] = char
+				}
+			}
+		}
+	}
+}
+
+// readFromFile: reads the grid from the file specified in Config.File
+func readFromFile() {
+	file, err := os.Open(Config.File)
+	if err != nil {
+		fmt.Println("Error: cannot open file:", err)
+		os.Exit(1)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
 	var originalH, originalW int
-	fmt.Println("Enter the dimensions (height width):")
-	fmt.Scanf("%d %d\n", &originalH, &originalW)
+	if scanner.Scan() {
+		_, err := fmt.Sscanf(scanner.Text(), "%d %d", &originalH, &originalW)
+		if err != nil {
+			fmt.Println("Error: invalid dimensions in file")
+			os.Exit(1)
+		}
+	}
 
 	// Check if fullscreen is enabled and adjust dimensions
 	h, w = originalH, originalW
@@ -36,8 +113,6 @@ func Input() {
 		if Config.Verbose {
 			effectiveHeight -= 5 // Reserve space for verbose output
 		}
-
-		// Adjust dimensions to be at least the terminal size
 		if h < effectiveHeight {
 			h = effectiveHeight
 		}
@@ -50,13 +125,12 @@ func Input() {
 	gameMap = make([][]rune, h)
 	for i := range gameMap {
 		gameMap[i] = make([]rune, w)
-		// Initialize all cells as dead
 		for j := range gameMap[i] {
-			gameMap[i][j] = '.'
+			gameMap[i][j] = '.' // Initialize all cells as dead
 		}
 	}
 
-	// Determine the number of rows to read from input (originalH, up to adjusted h)
+	// Determine the number of rows to read from file
 	inputHeight := originalH
 	if inputHeight > h {
 		inputHeight = h
@@ -67,17 +141,18 @@ func Input() {
 		InitializeFootprints()
 	}
 
-	// Read the actual input grid up to inputHeight rows
-	for i := 0; i < inputHeight; i++ {
-		rowInput := ""
-		fmt.Scanf("%s\n", &rowInput)
-
-		// Copy input to game map, up to adjusted width (w)
+	// Read the grid from the file
+	for i := 0; i < inputHeight && scanner.Scan(); i++ {
+		rowInput := scanner.Text()
 		for j, char := range rowInput {
 			if j < w {
 				gameMap[i][j] = char
 			}
 		}
+	}
+	if err := scanner.Err(); err != nil {
+		fmt.Println("Error: reading file:", err)
+		os.Exit(1)
 	}
 }
 
@@ -163,5 +238,7 @@ Options:
   --random=WxH      : Generate a random grid of the specified width (W) and height (H)
   --footprints      : Add traces of visited cells, displayed as '∘'
   --colored         : Add color to live cells and traces if footprints are enabled
-  --fullscreen      : Adjust the grid to fit the terminal size with empty cells`)
+  --fullscreen      : Adjust the grid to fit the terminal size with empty cells
+  --file=X          : Load the initial grid from a specified file
+`)
 }
