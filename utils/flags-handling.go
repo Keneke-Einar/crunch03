@@ -4,86 +4,104 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
-var PassedFlag map[string]bool = map[string]bool{
-	"help":    false,
-	"verbose": false,
-	"random":  false,
+// Config holds the configuration values set by flags.
+var Config struct {
+	Help    bool
+	Verbose bool
+	Delay   int
+	Random  string
 }
 
-var delay int = 2500
-
-// isFlag: returns true if the argument is a flag
-func isFlag(s string) bool {
-	if len(s) < 3 {
-		return false
-	}
-
-	return s[:2] == "--"
+// Flag represents a command-line flag.
+type Flag struct {
+	Name     string
+	HasValue bool
+	Process  func(value string) error
 }
 
-// hasValue: returns true if the flag has a value
-func hasValue(flag string) bool {
-	for _, char := range flag {
-		if char == '=' {
-			return true
-		}
-	}
-
-	return false
-}
-
-// getFlag: returns the name or value of a flag
-func getFlag(flag, target string) string { // target should be either "name" or "value"
-	end := 0
-
-	for i, char := range flag {
-		if char == '=' {
-			end = i
-			break
-		}
-	}
-
-	if target == "name" {
-		return flag[2:end]
-	} else if target == "value" {
-		return flag[end+1:]
-	} else {
-		return ""
-	}
-}
-
-// CheckFlags: checks the flags passed as arguments and sets the corresponding variables
-func CheckFlags() {
-	args := os.Args[1:] // discard the filename argument
-
-	for _, arg := range args {
-		if isFlag(arg) {
-			if hasValue(arg) {
-				if getFlag(arg, "name") == "delay-ms" {
-
-					newDelay, err := strconv.Atoi(getFlag(arg, "value"))
-					if err != nil {
-						fmt.Println("Error: invalid value for delay")
-					}
-
-					delay = newDelay
-				} else {
-					fmt.Println("Error: unknown flag.")
-				}
-			} else {
-
-				_, ok := PassedFlag[arg[2:]]
-
-				if !ok {
-					fmt.Println("Error: unknown flag.")
-				}
-
-				PassedFlag[arg[2:]] = true
+// flags defines the list of supported flags.
+var flags = []Flag{
+	{
+		Name:     "help",
+		HasValue: false,
+		Process: func(value string) error {
+			Config.Help = true
+			return nil
+		},
+	},
+	{
+		Name:     "verbose",
+		HasValue: false,
+		Process: func(value string) error {
+			Config.Verbose = true
+			return nil
+		},
+	},
+	{
+		Name:     "delay-ms",
+		HasValue: true,
+		Process: func(value string) error {
+			d, err := strconv.Atoi(value)
+			if err != nil {
+				return fmt.Errorf("invalid delay value: %s", value)
 			}
+			Config.Delay = d
+			return nil
+		},
+	},
+	{
+		Name:     "random",
+		HasValue: true,
+		Process: func(value string) error {
+			Config.Random = value
+			return nil
+		},
+	},
+}
+
+// ParseFlags checks the command-line arguments and processes any supported flags.
+func ParseFlags() {
+	args := os.Args[1:]
+	for _, arg := range args {
+		if !strings.HasPrefix(arg, "--") {
+			fmt.Printf("Error: invalid argument '%s'\n", arg)
+			continue
+		}
+
+		content := arg[2:]
+		var flagName, flagValue string
+
+		if strings.Contains(content, "=") {
+			parts := strings.SplitN(content, "=", 2)
+			flagName = parts[0]
+			flagValue = parts[1]
 		} else {
-			fmt.Println("Error: invalid argument.")
+			flagName = content
+		}
+
+		found := false
+		for _, f := range flags {
+			if f.Name == flagName {
+				found = true
+				if f.HasValue && flagValue == "" {
+					fmt.Printf("Error: flag '--%s' requires a value\n", flagName)
+					break
+				}
+				if !f.HasValue && flagValue != "" {
+					fmt.Printf("Error: flag '--%s' does not accept a value\n", flagName)
+					break
+				}
+				if err := f.Process(flagValue); err != nil {
+					fmt.Printf("Error processing flag '--%s': %s\n", flagName, err.Error())
+				}
+				break
+			}
+		}
+		if !found {
+			fmt.Printf("Error: unknown flag '--%s'\n", flagName)
 		}
 	}
 }
