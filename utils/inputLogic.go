@@ -13,7 +13,7 @@ func Input() error {
 			return err
 		}
 		if Config.Footprints {
-			InitializeFootprints()
+			initializeFootprints()
 		}
 		return nil
 	}
@@ -98,7 +98,7 @@ func initializeGrid(originalH, originalW int) {
 	}
 
 	if Config.Footprints {
-		InitializeFootprints()
+		initializeFootprints()
 	}
 }
 
@@ -159,4 +159,14 @@ func validateGridSize(h, w int) error {
 		return fmt.Errorf("Error: invalid grid size %dx%d. Minimum size is 3x3", h, w)
 	}
 	return nil
+}
+
+//======================Inner Utils======================
+
+// Initializes the tracking of visited cells for footprints
+func initializeFootprints() {
+	hasVisited = make([][]bool, h)
+	for i := range hasVisited {
+		hasVisited[i] = make([]bool, w)
+	}
 }
