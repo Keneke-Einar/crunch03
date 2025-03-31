@@ -16,7 +16,6 @@ var Config struct {
 	Delay       int
 	File        string
 	Random      string
-	Template    string
 }
 
 type Flag struct {
@@ -62,6 +61,10 @@ func processDelay(value string) error {
 
 // Sets the Random configuration value and generates a random map
 func processRandom(value string) error {
+	if Config.File != "" {
+		return nil // don't implement if --file or --template is already implemented
+	}
+
 	parts := strings.Split(value, "x")
 	if len(parts) != 2 {
 		return fmt.Errorf("invalid format for --random, expected WxH (e.g., 5x5)")
@@ -99,6 +102,10 @@ func processFullscreen(value string) error {
 
 // Sets the File configuration value
 func processFile(value string) error {
+	if Config.Random != "" || Config.File != "" {
+		return nil // don't implement if --random or --template is already implemented
+	}
+
 	Config.File = value
 	return nil
 }
@@ -110,6 +117,10 @@ func processEdgesPortal(value string) error {
 }
 
 func processTemplate(value string) error {
+	if Config.Random != "" || Config.File != "" {
+		return nil // don't implement if --random or --file is already implemented
+	}
+
 	if err := findTemplate(value); err != nil {
 		return err
 	}
