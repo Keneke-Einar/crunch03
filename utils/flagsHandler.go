@@ -16,6 +16,7 @@ var Config struct {
 	Delay       int
 	File        string
 	Random      string
+	Template    string
 }
 
 type Flag struct {
@@ -34,6 +35,7 @@ var flags = []Flag{
 	{Name: "fullscreen", HasValue: false, Process: processFullscreen},
 	{Name: "edges-portal", HasValue: false, Process: processEdgesPortal},
 	{Name: "file", HasValue: true, Process: processFile},
+	{Name: "template", HasValue: true, Process: processTemplate},
 }
 
 // Sets the Help configuration flag
@@ -105,6 +107,28 @@ func processFile(value string) error {
 func processEdgesPortal(value string) error {
 	Config.EdgesPortal = true
 	return nil
+}
+
+func processTemplate(value string) error {
+	if err := findTemplate(value); err != nil {
+		return err
+	}
+
+	Config.File = "utils/templates/" + value + ".txt"
+	return nil
+}
+
+// Checks if the template exists in the library. If it does, returns nil. If it doesn't, returns an error.
+func findTemplate(value string) error {
+	templates := []string{"3g-hwss", "3g-mwss", "acorn", "crab", "pentadecathlon", "pulsar", "toad"}
+
+	for _, template := range templates {
+		if template == value {
+			return nil
+		}
+	}
+
+	return fmt.Errorf("template %s doesn't exist", value)
 }
 
 // Displays usage instructions for the program
