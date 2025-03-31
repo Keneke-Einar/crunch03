@@ -53,24 +53,27 @@ Then enter dimensions (height width) followed by the grid rows:
 
 ### Command Line Flags
 ```
---help            Show usage information
---verbose         Display simulation details (tick, size, live cells, delay)
---delay-ms=NUM    Set animation delay in milliseconds (default: 2500)
---random=WxH      Generate random grid of width W and height H
---file=PATH       Load grid from specified file
---fullscreen      Adjust grid to terminal size
---footprints      Show traces of previously live cells (displayed as '∘')
---colored         Add color to live cells (cyan) and footprints (yellow)
---edges-portal    Enable portal edges (cells wrap around to opposite side)
---template        Load one of the existing templates
+--help                    Show usage information
+--verbose                 Display simulation details (tick, size, live cells, delay)
+--delay-ms=NUM            Set animation delay in milliseconds (default: 2500)
+--random=WxH              Generate random grid of width W and height H
+--file=FILENAME           Load grid from specified file
+--fullscreen              Adjust grid to terminal size
+--footprints              Show traces of previously live cells (displayed as '∘')
+--colored                 Add color to live cells (cyan) and footprints (yellow)
+--edges-portal            Enable portal edges (cells wrap around to opposite side)
+--template=TEMPLATE       Load one of the existing templates
+--use-unicode             Use unicode characters to display the cells
 ```
 
 ### Input Rules
+
 - Minimum grid size: 3x3
 - Only accepts '#' (live) and '.' (dead) characters
 - All rows must match specified width
 
 ## Game Rules
+
 - Live cell with < 2 live neighbors dies (underpopulation)
 - Live cell with 2-3 live neighbors survives
 - Live cell with > 3 live neighbors dies (overpopulation)
@@ -78,9 +81,18 @@ Then enter dimensions (height width) followed by the grid rows:
 - Simulation runs until no live cells remain
 
 ## Display
+
 - × represents live cells
 - · represents dead cells
 - ∘ represents footprints (when enabled)
+
+### Unicode Characters
+
+If the `--use-unicode` option is used, then the following characters are used:
+
+- ⬛ (U+2B1B) for the live cells
+- ⬜ (U+2B1C) for the dead cells
+- 🟨 (U+1F7E8) for the footprints
 
 ## Examples
 
@@ -127,17 +139,18 @@ DelayMs: 2500ms
 · · · · · ·
 ```
 
-### Random Grid with Color
+### Random Grid with Unicode Characters
 ```bash
-go run main.go --random=5x5 --colored
+go run main.go --random=5x5 --use-unicode
 ```
 Possible output:
+
 ```
-· · × · ·
-× · × · ·
-· × × · ·
-× · · · ·
-· · · × ×
+⬜⬜⬛⬜⬜
+⬛⬜⬛⬜⬜
+⬜⬛⬛⬜⬜
+⬛⬜⬜⬜⬜
+⬜⬜⬜⬛⬛
 ```
 
 ### File Input
