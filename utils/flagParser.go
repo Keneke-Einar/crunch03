@@ -26,6 +26,13 @@ func ParseFlags() (int, error) {
 			return 0, fmt.Errorf("error processing flag '--%s': %s", flagName, err)
 		}
 	}
+
+	if Config.UseUnicode {
+		charMap['#'] = "⬛"
+		charMap['.'] = "⬜"
+		charMap['o'] = "🟨"
+	}
+
 	return len(args), nil
 }
 

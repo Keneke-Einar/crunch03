@@ -13,6 +13,7 @@ var Config struct {
 	EdgesPortal bool
 	Help        bool
 	Verbose     bool
+	UseUnicode  bool
 	Delay       int
 	File        string
 	Random      string
@@ -35,6 +36,7 @@ var flags = []Flag{
 	{Name: "edges-portal", HasValue: false, Process: processEdgesPortal},
 	{Name: "file", HasValue: true, Process: processFile},
 	{Name: "template", HasValue: true, Process: processTemplate},
+	{Name: "use-unicode", HasValue: false, Process: processUnicode},
 }
 
 // Sets the Help configuration flag
@@ -94,6 +96,10 @@ func processFootprints(value string) error {
 
 // Sets the Colored configuration flag
 func processColored(value string) error {
+	if Config.UseUnicode {
+		return fmt.Errorf("--colored wasn't intended to be used with unicode characters")
+	}
+
 	Config.Colored = true
 	return nil
 }
@@ -120,6 +126,7 @@ func processEdgesPortal(value string) error {
 	return nil
 }
 
+// Sets a template from the templates directory for map generation.
 func processTemplate(value string) error {
 	if Config.Random != "" || Config.File != "" {
 		return nil // don't implement if --random or --file is already implemented
@@ -146,6 +153,15 @@ func findTemplate(value string) error {
 	return fmt.Errorf("template %s doesn't exist", value)
 }
 
+func processUnicode(value string) error {
+	if Config.Colored {
+		return fmt.Errorf("--colored wasn't intended to be used with unicode characters")
+	}
+
+	Config.UseUnicode = true
+	return nil
+}
+
 // Displays usage instructions for the program
 func PrintHelp() {
 	fmt.Println(`Usage: go run main.go [options]
@@ -167,6 +183,8 @@ Options:
   --footprints		: Add traces of visited cells, displayed as '∘'
   --colored		: Add color to live cells and traces if footprints
 				are enabled
+  --use-unicode		: Use unicode characters to display the cells.
+				(not intended to be used with --colored)
   --template=TEMPLATE	: Load one of the existing templates:
   				3g-hwss - heavyweight spaceship from 3 gliders,
 				3g-mwss - middleweight spaceship from 3 gliders,
