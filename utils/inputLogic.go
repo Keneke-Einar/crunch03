@@ -136,6 +136,8 @@ func validateRowInput(rowInput string, expectedWidth int) error {
 
 // Reads grid input from the user
 func populateGridFromUser(originalH, originalW int) error {
+	fmt.Println("Enter the grid; use only '#' and '.' for live and dead cells, respectively:")
+
 	for i := 0; i < originalH; i++ {
 		var rowInput string
 		if _, err := fmt.Scanf("%s\n", &rowInput); err != nil {
