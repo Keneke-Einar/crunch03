@@ -7,14 +7,19 @@ import (
 )
 
 func main() {
-	if err := utils.ParseFlags(); err != nil {
+	nArgs, err := utils.ParseFlags()
+
+	if err != nil {
 		fmt.Println("Error in ParseFlags:", err)
 		os.Exit(1)
 	}
 
-	if utils.Config.Help {
+	if utils.Config.Help && nArgs == 1 {
 		utils.PrintHelp()
 		return
+	} else if utils.Config.Help && nArgs > 1 {
+		fmt.Println("Error: --help cannot be used with other flags")
+		os.Exit(1)
 	}
 
 	if utils.Config.Delay == 0 {
