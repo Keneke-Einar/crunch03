@@ -27,16 +27,24 @@ type Flag struct {
 
 var flags = []Flag{
 	{Name: "help", HasValue: false, Process: processHelp},
-	{Name: "verbose", HasValue: false, Process: processVerbose},
+	{Name: "verbose", HasValue: false, Process: processCheckFlag(&Config.Verbose)}, //!
 	{Name: "delay-ms", HasValue: true, Process: processDelay},
 	{Name: "random", HasValue: true, Process: processRandom},
-	{Name: "footprints", HasValue: false, Process: processFootprints},
+	{Name: "footprints", HasValue: false, Process: processCheckFlag(&Config.Footprints)}, //!
 	{Name: "colored", HasValue: false, Process: processColored},
-	{Name: "fullscreen", HasValue: false, Process: processFullscreen},
-	{Name: "edges-portal", HasValue: false, Process: processEdgesPortal},
+	{Name: "fullscreen", HasValue: false, Process: processCheckFlag(&Config.Fullscreen)},    //!
+	{Name: "edges-portal", HasValue: false, Process: processCheckFlag(&Config.EdgesPortal)}, //!
 	{Name: "file", HasValue: true, Process: processFile},
 	{Name: "template", HasValue: true, Process: processTemplate},
 	{Name: "use-unicode", HasValue: false, Process: processUnicode},
+}
+
+// Universal function to process flags that toggle a boolean value
+func processCheckFlag(target *bool) func(string) error {
+	return func(_ string) error {
+		*target = true
+		return nil
+	}
 }
 
 // Sets the Help configuration flag
@@ -46,12 +54,6 @@ func processHelp(value string) error {
 	}
 
 	Config.Help = true
-	return nil
-}
-
-// Sets the Verbose configuration flag
-func processVerbose(value string) error {
-	Config.Verbose = true
 	return nil
 }
 
@@ -88,12 +90,6 @@ func processRandom(value string) error {
 	return nil
 }
 
-// Sets the Footprints configuration flag
-func processFootprints(value string) error {
-	Config.Footprints = true
-	return nil
-}
-
 // Sets the Colored configuration flag
 func processColored(value string) error {
 	if Config.UseUnicode {
@@ -104,12 +100,6 @@ func processColored(value string) error {
 	return nil
 }
 
-// Sets the Fullscreen configuration flag
-func processFullscreen(value string) error {
-	Config.Fullscreen = true
-	return nil
-}
-
 // Sets the File configuration value
 func processFile(value string) error {
 	if Config.Random != "" || Config.File != "" {
@@ -117,12 +107,6 @@ func processFile(value string) error {
 	}
 
 	Config.File = value
-	return nil
-}
-
-// Enables portal behavior for map edges
-func processEdgesPortal(value string) error {
-	Config.EdgesPortal = true
 	return nil
 }
 
@@ -160,37 +144,4 @@ func processUnicode(value string) error {
 
 	Config.UseUnicode = true
 	return nil
-}
-
-// Displays usage instructions for the program
-func PrintHelp() {
-	fmt.Println(`Usage: go run main.go [options]
-
-Options:
-  --help		: Show the help message and exit
-  --verbose		: Display detailed information about the simulation,
-				including grid size, number of ticks, speed,
-				and map name
-  --delay-ms=X		: Set the animation speed in milliseconds.
-				Default is 2500 milliseconds
-  --file=FILENAME	: Load the initial grid from a specified file
-  --edges-portal	: Enable portal edges where cells that exit the
-				grid appear on the opposite side
-  --random=WxH		: Generate a random grid of the specified width (W)
-				and height (H)
-  --fullscreen		: Adjust the grid to fit the terminal size with
-				empty cells
-  --footprints		: Add traces of visited cells, displayed as '∘'
-  --colored		: Add color to live cells and traces if footprints
-				are enabled
-  --use-unicode		: Use unicode characters to display the cells.
-				(not intended to be used with --colored)
-  --template=TEMPLATE	: Load one of the existing templates:
-  				3g-hwss - heavyweight spaceship from 3 gliders,
-				3g-mwss - middleweight spaceship from 3 gliders,
-				acorn - a small pattern that grows big,
-				crab - a crab,
-				pentadecathlon - period 15 oscillator,
-				pulsar - period 3 oscillator,
-				toad - period 2 oscillator`)
 }
