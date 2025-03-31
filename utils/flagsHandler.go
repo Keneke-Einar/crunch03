@@ -39,6 +39,10 @@ var flags = []Flag{
 
 // Sets the Help configuration flag
 func processHelp(value string) error {
+	if Config.Colored || Config.Fullscreen || Config.Footprints || Config.EdgesPortal || Config.Verbose || Config.Delay != 0 || Config.Random != "" || Config.File != "" {
+		return fmt.Errorf("--help cannot be used with other flags")
+	}
+
 	Config.Help = true
 	return nil
 }

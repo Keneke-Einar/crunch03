@@ -7,26 +7,26 @@ import (
 )
 
 // Processes command-line arguments into configuration flags
-func ParseFlags() error {
+func ParseFlags() (int, error) {
 	// all passed arguments except the filename
 	args := os.Args[1:]
 
 	for _, arg := range args {
 		flagName, flagValue, valid := extractFlag(arg)
 		if !valid {
-			return fmt.Errorf("error: invalid argument '%s'", arg)
+			return 0, fmt.Errorf("error: invalid argument '%s'", arg)
 		}
 
 		flag, found := findFlag(flagName)
 		if !found {
-			return fmt.Errorf("error: unknown flag '--%s'", flagName)
+			return 0, fmt.Errorf("error: unknown flag '--%s'", flagName)
 		}
 
 		if err := processFlag(flag, flagValue); err != nil {
-			return fmt.Errorf("error processing flag '--%s': %s", flagName, err)
+			return 0, fmt.Errorf("error processing flag '--%s': %s", flagName, err)
 		}
 	}
-	return nil
+	return len(args), nil
 }
 
 // Extracts flag name and value from an argument string
