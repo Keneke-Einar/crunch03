@@ -153,7 +153,7 @@ Options:
 				and map name
   --delay-ms=X		: Set the animation speed in milliseconds.
 				Default is 2500 milliseconds
-  --file=X		: Load the initial grid from a specified file
+  --file=FILENAME	: Load the initial grid from a specified file
   --edges-portal	: Enable portal edges where cells that exit the
 				grid appear on the opposite side
   --random=WxH		: Generate a random grid of the specified width (W)
@@ -162,5 +162,13 @@ Options:
 				empty cells
   --footprints		: Add traces of visited cells, displayed as '∘'
   --colored		: Add color to live cells and traces if footprints
-				are enabled`)
+				are enabled
+  --template=TEMPLATE	: Load one of the existing templates:
+  				3g-hwss - heavyweight spaceship from 3 gliders,
+				3g-mwss - middleweight spaceship from 3 gliders,
+				acorn - a small pattern that grows big,
+				crab - a crab,
+				pentadecathlon - period 15 oscillator,
+				pulsar - period 3 oscillator,
+				toad - period 2 oscillator`)
 }
