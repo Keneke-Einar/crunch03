@@ -31,10 +31,12 @@ go run main.go [options]
 
 ## Usage
 
-The program accepts a grid of '#' (live cells) and '.' (dead cells) either through:
-- Manual input
-- File input
-- Random generation
+The program accepts a grid of '#' (live cells) and '.' (dead cells) through:
+
+- manual input,
+- file input,
+- random generation, or
+- built-in template.
 
 ### Basic Usage
 ```bash
@@ -60,6 +62,7 @@ Then enter dimensions (height width) followed by the grid rows:
 --footprints      Show traces of previously live cells (displayed as '∘')
 --colored         Add color to live cells (cyan) and footprints (yellow)
 --edges-portal    Enable portal edges (cells wrap around to opposite side)
+--template        Load one of the existing templates
 ```
 
 ### Input Rules
